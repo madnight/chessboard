@@ -6,6 +6,7 @@ var watchify = require('watchify');
 var browserify = require('browserify');
 var uglify = require('gulp-uglify');
 var streamify = require('gulp-streamify');
+var eslint = require('eslint');
 
 var sources = ['./src/main.js'];
 var destination = './';
@@ -13,12 +14,6 @@ var onError = function(error) {
   gutil.log(gutil.colors.red(error.message));
 };
 var standalone = 'Chessground';
-
-gulp.task('lint', function() {
-  return gulp.src('./src/main.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
-});
 
 gulp.task('prod', function() {
   return browserify('./src/main.js', {
