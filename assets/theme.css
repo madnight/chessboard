@@ -1,6 +1,9 @@
 /*
  * Board
  */
+.brown .cg-board {
+  background-image: url('images/board/brown.png');
+}
 .blue .cg-board {
   background-image: url('images/board/blue2.jpg');
 }
