@@ -1,7 +1,7 @@
 {
-  "name": "chessground",
-  "version": "4.3.10",
-  "description": "lichess.org Chess UI",
+  "name": "chessboard-es6",
+  "version": "5.0.0",
+  "description": "Simple Chess Board",
   "main": "src/main.js",
   "directories": {
     "example": "examples"
@@ -22,18 +22,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/ornicar/chessground.git"
+    "url": "git://github.com/madnight/chessboard.git"
   },
   "keywords": [
     "chess",
-    "lichess.org",
     "chessboard",
     "UI"
   ],
-  "author": "Thibault Duplessis (https://github.com/ornicar)",
+  "author": "Fabian Beuke",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ornicar/chessground/issues"
+    "url": "https://github.com/madnight/chessboard/issues"
   },
-  "homepage": "https://github.com/ornicar/chessground"
+  "homepage": "https://github.com/madnight/chessboard"
 }
