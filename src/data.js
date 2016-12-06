@@ -1,8 +1,8 @@
-var fen = require('./fen');
-var configure = require('./configure');
+import fen from './fen';
+import configure from './configure';
 
-module.exports = function(cfg) {
-  var defaults = {
+export default cfg => {
+  const defaults = {
     pieces: fen.read(fen.initial),
     orientation: 'white', // board orientation. white | black
     turnColor: 'white', // turn to play. white | black
@@ -55,8 +55,8 @@ module.exports = function(cfg) {
       dropped: [], // last dropped [orig, dest], not to be animated
       showDests: true, // whether to add the move-dest class on squares
       events: {
-        after: function(orig, dest, metadata) {}, // called after the move has been played
-        afterNewPiece: function(role, pos) {} // called after a new piece is dropped on the board
+        after(orig, dest, metadata) {}, // called after the move has been played
+        afterNewPiece(role, pos) {} // called after a new piece is dropped on the board
       },
       rookCastle: true // castle by moving the king to the rook
     },
@@ -67,16 +67,16 @@ module.exports = function(cfg) {
       dests: [], // premove destinations for the current selection
       current: null, // keys of the current saved premove ["e2" "e4"] | null
       events: {
-        set: function(orig, dest) {}, // called after the premove has been set
-        unset: function() {} // called after the premove has been unset
+        set(orig, dest) {}, // called after the premove has been set
+        unset() {} // called after the premove has been unset
       }
     },
     predroppable: {
       enabled: false, // allow predrops for color that can not move
       current: {}, // current saved predrop {role: 'knight', key: 'e4'} | {}
       events: {
-        set: function(role, key) {}, // called after the predrop has been set
-        unset: function() {} // called after the predrop has been unset
+        set(role, key) {}, // called after the predrop has been set
+        unset() {} // called after the predrop has been unset
       }
     },
     draggable: {
@@ -106,19 +106,19 @@ module.exports = function(cfg) {
       dragged: !('ontouchstart' in window)
     },
     events: {
-      change: function() {}, // called after the situation changes on the board
+      change() {}, // called after the situation changes on the board
       // called after a piece has been moved.
       // capturedPiece is null or like {color: 'white', 'role': 'queen'}
-      move: function(orig, dest, capturedPiece) {},
-      dropNewPiece: function(role, pos) {},
-      capture: function(key, piece) {}, // DEPRECATED called when a piece has been captured
-      select: function(key) {} // called when a square is selected
+      move(orig, dest, capturedPiece) {},
+      dropNewPiece(role, pos) {},
+      capture(key, piece) {}, // DEPRECATED called when a piece has been captured
+      select(key) {} // called when a square is selected
     },
     items: null, // items on the board { render: key -> vdom }
     drawable: {
       enabled: false, // allows SVG drawings
       eraseOnClick: true,
-      onChange: function(shapes) {},
+      onChange(shapes) {},
       // user shapes
       shapes: [
         // {brush: 'green', orig: 'e8'},

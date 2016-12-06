@@ -1,31 +1,31 @@
-var drag = require('./drag');
-var draw = require('./draw');
-var util = require('./util');
-var svg = require('./svg');
-var makeCoords = require('./coords');
-var m = require('mithril');
+import drag from './drag';
+import draw from './draw';
+import util from './util';
+import svg from './svg';
+import makeCoords from './coords';
+import m from 'mithril';
 
-var pieceTag = 'piece';
-var squareTag = 'square';
+const pieceTag = 'piece';
+const squareTag = 'square';
 
 function pieceClass(p) {
-  return p.role + ' ' + p.color;
+  return `${p.role} ${p.color}`;
 }
 
 function renderPiece(d, key, ctx) {
-  var attrs = {
-    key: 'p' + key,
+  const attrs = {
+    key: `p${key}`,
     style: {},
     class: pieceClass(d.pieces[key])
   };
-  var translate = posToTranslate(util.key2pos(key), ctx);
-  var draggable = d.draggable.current;
+  const translate = posToTranslate(util.key2pos(key), ctx);
+  const draggable = d.draggable.current;
   if (draggable.orig === key && draggable.started) {
     translate[0] += draggable.pos[0] + draggable.dec[0];
     translate[1] += draggable.pos[1] + draggable.dec[1];
     attrs.class += ' dragging';
   } else if (d.animation.current.anims) {
-    var animation = d.animation.current.anims[key];
+    const animation = d.animation.current.anims[key];
     if (animation) {
       translate[0] += animation[1][0];
       translate[1] += animation[1][1];
@@ -35,20 +35,20 @@ function renderPiece(d, key, ctx) {
   if (d.pieceKey) attrs['data-key'] = key;
   return {
     tag: pieceTag,
-    attrs: attrs
+    attrs
   };
 }
 
 function renderSquare(key, classes, ctx) {
-  var attrs = {
-    key: 's' + key,
+  const attrs = {
+    key: `s${key}`,
     class: classes,
     style: {}
   };
   attrs.style[ctx.transformProp] = util.translate(posToTranslate(util.key2pos(key), ctx));
   return {
     tag: squareTag,
-    attrs: attrs
+    attrs
   };
 }
 
@@ -60,22 +60,22 @@ function posToTranslate(pos, ctx) {
 
 function renderGhost(key, piece, ctx) {
   if (!piece) return;
-  var attrs = {
-    key: 'g' + key,
+  const attrs = {
+    key: `g${key}`,
     style: {},
-    class: pieceClass(piece) + ' ghost'
+    class: `${pieceClass(piece)} ghost`
   };
   attrs.style[ctx.transformProp] = util.translate(posToTranslate(util.key2pos(key), ctx));
   return {
     tag: pieceTag,
-    attrs: attrs
+    attrs
   };
 }
 
 function renderFading(cfg, ctx) {
-  var attrs = {
-    key: 'f' + cfg.piece.key,
-    class: 'fading ' + pieceClass(cfg.piece),
+  const attrs = {
+    key: `f${cfg.piece.key}`,
+    class: `fading ${pieceClass(cfg.piece)}`,
     style: {
       opacity: cfg.opacity
     }
@@ -83,7 +83,7 @@ function renderFading(cfg, ctx) {
   attrs.style[ctx.transformProp] = util.translate(posToTranslate(cfg.piece.pos, ctx));
   return {
     tag: pieceTag,
-    attrs: attrs
+    attrs
   };
 }
 
@@ -93,45 +93,45 @@ function addSquare(squares, key, klass) {
 }
 
 function renderSquares(ctrl, ctx) {
-  var d = ctrl.data;
-  var squares = {};
-  if (d.lastMove && d.highlight.lastMove) d.lastMove.forEach(function(k) {
+  const d = ctrl.data;
+  const squares = {};
+  if (d.lastMove && d.highlight.lastMove) d.lastMove.forEach(k => {
     addSquare(squares, k, 'last-move');
   });
   if (d.check && d.highlight.check) addSquare(squares, d.check, 'check');
   if (d.selected) {
     addSquare(squares, d.selected, 'selected');
-    var over = d.draggable.current.over;
-    var dests = d.movable.dests[d.selected];
-    if (dests) dests.forEach(function(k) {
+    const over = d.draggable.current.over;
+    const dests = d.movable.dests[d.selected];
+    if (dests) dests.forEach(k => {
       if (k === over) addSquare(squares, k, 'move-dest drag-over');
-      else if (d.movable.showDests) addSquare(squares, k, 'move-dest' + (d.pieces[k] ? ' oc' : ''));
+      else if (d.movable.showDests) addSquare(squares, k, `move-dest${d.pieces[k] ? ' oc' : ''}`);
     });
-    var pDests = d.premovable.dests;
-    if (pDests) pDests.forEach(function(k) {
+    const pDests = d.premovable.dests;
+    if (pDests) pDests.forEach(k => {
       if (k === over) addSquare(squares, k, 'premove-dest drag-over');
-      else if (d.movable.showDests) addSquare(squares, k, 'premove-dest' + (d.pieces[k] ? ' oc' : ''));
+      else if (d.movable.showDests) addSquare(squares, k, `premove-dest${d.pieces[k] ? ' oc' : ''}`);
     });
   }
-  var premove = d.premovable.current;
-  if (premove) premove.forEach(function(k) {
+  const premove = d.premovable.current;
+  if (premove) premove.forEach(k => {
     addSquare(squares, k, 'current-premove');
   });
   else if (d.predroppable.current.key)
     addSquare(squares, d.predroppable.current.key, 'current-premove');
 
-  if (ctrl.vm.exploding) ctrl.vm.exploding.keys.forEach(function(k) {
-    addSquare(squares, k, 'exploding' + ctrl.vm.exploding.stage);
+  if (ctrl.vm.exploding) ctrl.vm.exploding.keys.forEach(k => {
+    addSquare(squares, k, `exploding${ctrl.vm.exploding.stage}`);
   });
 
-  var dom = [];
+  const dom = [];
   if (d.items) {
-    for (var i = 0; i < 64; i++) {
+    for (let i = 0; i < 64; i++) {
       var key = util.allKeys[i];
-      var square = squares[key];
-      var item = d.items.render(util.key2pos(key), key);
+      const square = squares[key];
+      const item = d.items.render(util.key2pos(key), key);
       if (square || item) {
-        var sq = renderSquare(key, square ? square.join(' ') + (item ? ' has-item' : '') : 'has-item', ctx);
+        const sq = renderSquare(key, square ? square.join(' ') + (item ? ' has-item' : '') : 'has-item', ctx);
         if (item) sq.children = [item];
         dom.push(sq);
       }
@@ -144,22 +144,22 @@ function renderSquares(ctrl, ctx) {
 }
 
 function renderContent(ctrl) {
-  var d = ctrl.data;
+  const d = ctrl.data;
   if (!d.bounds) return;
-  var ctx = {
+  const ctx = {
     asWhite: d.orientation === 'white',
     bounds: d.bounds(),
     transformProp: util.transformProp()
   };
-  var children = renderSquares(ctrl, ctx);
+  const children = renderSquares(ctrl, ctx);
   if (d.animation.current.fadings)
-    d.animation.current.fadings.forEach(function(p) {
+    d.animation.current.fadings.forEach(p => {
       children.push(renderFading(p, ctx));
     });
 
   // must insert pieces in the right order
   // for 3D to display correctly
-  var keys = ctx.asWhite ? util.allKeys : util.invKeys;
+  const keys = ctx.asWhite ? util.allKeys : util.invKeys;
   if (d.items)
     for (var i = 0; i < 64; i++) {
       if (d.pieces[keys[i]] && !d.items.render(util.key2pos(keys[i]), keys[i]))
@@ -170,7 +170,7 @@ function renderContent(ctrl) {
       }
 
   if (d.draggable.showGhost) {
-    var dragOrig = d.draggable.current.orig;
+    const dragOrig = d.draggable.current.orig;
     if (dragOrig && !d.draggable.current.newPiece)
       children.push(renderGhost(dragOrig, d.pieces[dragOrig], ctx));
   }
@@ -179,7 +179,7 @@ function renderContent(ctrl) {
 }
 
 function startDragOrDraw(d) {
-  return function(e) {
+  return e => {
     if (util.isRightButton(e) && d.draggable.current.orig) {
       if (d.draggable.current.newPiece) delete d.pieces[d.draggable.current.orig];
       d.draggable.current = {}
@@ -190,49 +190,49 @@ function startDragOrDraw(d) {
 }
 
 function dragOrDraw(d, withDrag, withDraw) {
-  return function(e) {
+  return e => {
     if ((e.shiftKey || util.isRightButton(e)) && d.drawable.enabled) withDraw(d, e);
     else if (!d.viewOnly) withDrag(d, e);
   };
 }
 
 function bindEvents(ctrl, el, context) {
-  var d = ctrl.data;
-  var onstart = startDragOrDraw(d);
-  var onmove = dragOrDraw(d, drag.move, draw.move);
-  var onend = dragOrDraw(d, drag.end, draw.end);
-  var startEvents = ['touchstart', 'mousedown'];
-  var moveEvents = ['touchmove', 'mousemove'];
-  var endEvents = ['touchend', 'mouseup'];
-  startEvents.forEach(function(ev) {
+  const d = ctrl.data;
+  const onstart = startDragOrDraw(d);
+  const onmove = dragOrDraw(d, drag.move, draw.move);
+  const onend = dragOrDraw(d, drag.end, draw.end);
+  const startEvents = ['touchstart', 'mousedown'];
+  const moveEvents = ['touchmove', 'mousemove'];
+  const endEvents = ['touchend', 'mouseup'];
+  startEvents.forEach(ev => {
     el.addEventListener(ev, onstart);
   });
-  moveEvents.forEach(function(ev) {
+  moveEvents.forEach(ev => {
     document.addEventListener(ev, onmove);
   });
-  endEvents.forEach(function(ev) {
+  endEvents.forEach(ev => {
     document.addEventListener(ev, onend);
   });
-  context.onunload = function() {
-    startEvents.forEach(function(ev) {
+  context.onunload = () => {
+    startEvents.forEach(ev => {
       el.removeEventListener(ev, onstart);
     });
-    moveEvents.forEach(function(ev) {
+    moveEvents.forEach(ev => {
       document.removeEventListener(ev, onmove);
     });
-    endEvents.forEach(function(ev) {
+    endEvents.forEach(ev => {
       document.removeEventListener(ev, onend);
     });
   };
 }
 
 function renderBoard(ctrl) {
-  var d = ctrl.data;
+  const d = ctrl.data;
   return {
     tag: 'div',
     attrs: {
-      class: 'cg-board orientation-' + d.orientation,
-      config: function(el, isUpdate, context) {
+      class: `cg-board orientation-${d.orientation}`,
+      config(el, isUpdate, context) {
         if (isUpdate) return;
         if (!d.viewOnly || d.drawable.enabled)
           bindEvents(ctrl, el, context);
@@ -240,10 +240,10 @@ function renderBoard(ctrl) {
         // it's called when dragging or animating pieces,
         // to prevent the full application embedding chessground
         // rendering on every animation frame
-        d.render = function() {
+        d.render = () => {
           m.render(el, renderContent(ctrl));
         };
-        d.renderRAF = function() {
+        d.renderRAF = () => {
           util.requestAnimationFrame(d.render);
         };
         d.bounds = util.memo(el.getBoundingClientRect.bind(el));
@@ -255,31 +255,31 @@ function renderBoard(ctrl) {
   };
 }
 
-module.exports = function(ctrl) {
-  var d = ctrl.data;
+export default ctrl => {
+  const d = ctrl.data;
   return {
     tag: 'div',
     attrs: {
-      config: function(el, isUpdate) {
+      config(el, isUpdate) {
         if (isUpdate) {
           if (d.redrawCoords) d.redrawCoords(d.orientation);
           return;
         }
         if (d.coordinates) d.redrawCoords = makeCoords(d.orientation, el);
-        el.addEventListener('contextmenu', function(e) {
+        el.addEventListener('contextmenu', e => {
           if (d.disableContextMenu || d.drawable.enabled) {
             e.preventDefault();
             return false;
           }
         });
         if (d.resizable)
-          document.body.addEventListener('chessground.resize', function(e) {
+          document.body.addEventListener('chessground.resize', e => {
             d.bounds.clear();
             d.render();
           }, false);
-        ['onscroll', 'onresize'].forEach(function(n) {
-          var prev = window[n];
-          window[n] = function() {
+        ['onscroll', 'onresize'].forEach(n => {
+          const prev = window[n];
+          window[n] = () => {
             prev && prev();
             d.bounds.clear();
           };

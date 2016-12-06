@@ -1,8 +1,8 @@
-var merge = require('merge');
-var board = require('./board');
-var fen = require('./fen');
+import merge from 'merge';
+import board from './board';
+import fen from './fen';
 
-module.exports = function(data, config) {
+export default (data, config) => {
 
   if (!config) return;
 
@@ -32,14 +32,12 @@ module.exports = function(data, config) {
     data.animation.enabled = false;
 
   if (!data.movable.rookCastle) {
-    var rank = data.movable.color === 'white' ? 1 : 8;
-    var kingStartPos = 'e' + rank;
+    const rank = data.movable.color === 'white' ? 1 : 8;
+    const kingStartPos = `e${rank}`;
     if (data.movable.dests) {
-      var dests = data.movable.dests[kingStartPos];
+      const dests = data.movable.dests[kingStartPos];
       if (!dests || data.pieces[kingStartPos].role !== 'king') return;
-      data.movable.dests[kingStartPos] = dests.filter(function(d) {
-        return d !== 'a' + rank && d !== 'h' + rank
-      });
+      data.movable.dests[kingStartPos] = dests.filter(d => d !== `a${rank}` && d !== `h${rank}`);
     }
   }
 };

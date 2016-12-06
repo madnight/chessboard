@@ -1,11 +1,11 @@
-var board = require('./board');
-var data = require('./data');
-var fen = require('./fen');
-var configure = require('./configure');
-var anim = require('./anim');
-var drag = require('./drag');
+import board from './board';
+import data from './data';
+import fen from './fen';
+import configure from './configure';
+import anim from './anim';
+import drag from './drag';
 
-module.exports = function(cfg) {
+export default function(cfg) {
 
   this.data = data(cfg);
 
@@ -13,20 +13,16 @@ module.exports = function(cfg) {
     exploding: false
   };
 
-  this.getFen = function() {
-    return fen.write(this.data.pieces);
-  }.bind(this);
+  this.getFen = () => fen.write(this.data.pieces);
 
-  this.getOrientation = function() {
-    return this.data.orientation;
-  }.bind(this);
+  this.getOrientation = () => this.data.orientation;
 
   this.set = anim(configure, this.data);
 
-  this.toggleOrientation = function() {
+  this.toggleOrientation = () => {
     anim(board.toggleOrientation, this.data)();
     if (this.data.redrawCoords) this.data.redrawCoords(this.data.orientation);
-  }.bind(this);
+  };
 
   this.setPieces = anim(board.setPieces, this.data);
 
@@ -46,42 +42,42 @@ module.exports = function(cfg) {
 
   this.setCheck = anim(board.setCheck, this.data, true);
 
-  this.cancelMove = anim(function(data) {
+  this.cancelMove = anim(data => {
     board.cancelMove(data);
     drag.cancel(data);
-  }.bind(this), this.data, true);
+  }, this.data, true);
 
-  this.stop = anim(function(data) {
+  this.stop = anim(data => {
     board.stop(data);
     drag.cancel(data);
-  }.bind(this), this.data, true);
+  }, this.data, true);
 
-  this.explode = function(keys) {
+  this.explode = keys => {
     if (!this.data.render) return;
     this.vm.exploding = {
       stage: 1,
-      keys: keys
+      keys
     };
     this.data.renderRAF();
-    setTimeout(function() {
+    setTimeout(() => {
       this.vm.exploding.stage = 2;
       this.data.renderRAF();
-      setTimeout(function() {
+      setTimeout(() => {
         this.vm.exploding = false;
         this.data.renderRAF();
-      }.bind(this), 120);
-    }.bind(this), 120);
-  }.bind(this);
+      }, 120);
+    }, 120);
+  };
 
-  this.setAutoShapes = function(shapes) {
-    anim(function(data) {
+  this.setAutoShapes = shapes => {
+    anim(data => {
       data.drawable.autoShapes = shapes;
     }, this.data, false)();
-  }.bind(this);
+  };
 
-  this.setShapes = function(shapes) {
-    anim(function(data) {
+  this.setShapes = shapes => {
+    anim(data => {
       data.drawable.shapes = shapes;
     }, this.data, false)();
-  }.bind(this);
+  };
 };

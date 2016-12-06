@@ -1,16 +1,16 @@
-var util = require('./util');
+import util from './util';
 
 // https://gist.github.com/gre/1650294
-var easing = {
-  easeInOutCubic: function(t) {
+const easing = {
+  easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
   },
 };
 
 function makePiece(k, piece, invert) {
-  var key = invert ? util.invertKey(k) : k;
+  const key = invert ? util.invertKey(k) : k;
   return {
-    key: key,
+    key,
     pos: util.key2pos(key),
     role: piece.role,
     color: piece.color
@@ -22,32 +22,30 @@ function samePiece(p1, p2) {
 }
 
 function closer(piece, pieces) {
-  return pieces.sort(function(p1, p2) {
-    return util.distance(piece.pos, p1.pos) - util.distance(piece.pos, p2.pos);
-  })[0];
+  return pieces.sort((p1, p2) => util.distance(piece.pos, p1.pos) - util.distance(piece.pos, p2.pos))[0];
 }
 
 function computePlan(prev, current) {
-  var bounds = current.bounds(),
-    width = bounds.width / 8,
-    height = bounds.height / 8,
-    anims = {},
-    animedOrigs = [],
-    fadings = [],
-    missings = [],
-    news = [],
-    invert = prev.orientation !== current.orientation,
-    prePieces = {},
-    white = current.orientation === 'white';
-  for (var pk in prev.pieces) {
-    var piece = makePiece(pk, prev.pieces[pk], invert);
+  const bounds = current.bounds();
+  const width = bounds.width / 8;
+  const height = bounds.height / 8;
+  const anims = {};
+  const animedOrigs = [];
+  const fadings = [];
+  const missings = [];
+  const news = [];
+  const invert = prev.orientation !== current.orientation;
+  const prePieces = {};
+  const white = current.orientation === 'white';
+  for (const pk in prev.pieces) {
+    const piece = makePiece(pk, prev.pieces[pk], invert);
     prePieces[piece.key] = piece;
   }
-  for (var i = 0; i < util.allKeys.length; i++) {
-    var key = util.allKeys[i];
+
+  for (const key of util.allKeys) {
     if (key !== current.movable.dropped[1]) {
-      var curP = current.pieces[key];
-      var preP = prePieces[key];
+      const curP = current.pieces[key];
+      const preP = prePieces[key];
       if (curP) {
         if (preP) {
           if (!samePiece(curP, preP)) {
@@ -60,17 +58,18 @@ function computePlan(prev, current) {
         missings.push(preP);
     }
   }
-  news.forEach(function(newP) {
-    var preP = closer(newP, missings.filter(util.partial(samePiece, newP)));
+
+  news.forEach(newP => {
+    const preP = closer(newP, missings.filter(util.partial(samePiece, newP)));
     if (preP) {
-      var orig = white ? preP.pos : newP.pos;
-      var dest = white ? newP.pos : preP.pos;
-      var vector = [(orig[0] - dest[0]) * width, (dest[1] - orig[1]) * height];
+      const orig = white ? preP.pos : newP.pos;
+      const dest = white ? newP.pos : preP.pos;
+      const vector = [(orig[0] - dest[0]) * width, (dest[1] - orig[1]) * height];
       anims[newP.key] = [vector, vector];
       animedOrigs.push(preP.key);
     }
   });
-  missings.forEach(function(p) {
+  missings.forEach(p => {
     if (
       p.key !== current.movable.dropped[0] &&
       !util.containsX(animedOrigs, p.key) &&
@@ -83,8 +82,8 @@ function computePlan(prev, current) {
   });
 
   return {
-    anims: anims,
-    fadings: fadings
+    anims,
+    fadings
   };
 }
 
@@ -94,21 +93,21 @@ function roundBy(n, by) {
 
 function go(data) {
   if (!data.animation.current.start) return; // animation was canceled
-  var rest = 1 - (new Date().getTime() - data.animation.current.start) / data.animation.current.duration;
+  const rest = 1 - (new Date().getTime() - data.animation.current.start) / data.animation.current.duration;
   if (rest <= 0) {
     data.animation.current = {};
     data.render();
   } else {
-    var ease = easing.easeInOutCubic(rest);
-    for (var key in data.animation.current.anims) {
-      var cfg = data.animation.current.anims[key];
+    const ease = easing.easeInOutCubic(rest);
+    for (const key in data.animation.current.anims) {
+      const cfg = data.animation.current.anims[key];
       cfg[1] = [roundBy(cfg[0][0] * ease, 10), roundBy(cfg[0][1] * ease, 10)];
     }
-    for (var i in data.animation.current.fadings) {
+    for (const i in data.animation.current.fadings) {
       data.animation.current.fadings[i].opacity = roundBy(ease, 100);
     }
     data.render();
-    util.requestAnimationFrame(function() {
+    util.requestAnimationFrame(() => {
       go(data);
     });
   }
@@ -116,22 +115,22 @@ function go(data) {
 
 function animate(transformation, data) {
   // clone data
-  var prev = {
+  const prev = {
     orientation: data.orientation,
     pieces: {}
   };
   // clone pieces
-  for (var key in data.pieces) {
+  for (const key in data.pieces) {
     prev.pieces[key] = {
       role: data.pieces[key].role,
       color: data.pieces[key].color
     };
   }
-  var result = transformation();
+  const result = transformation();
   if (data.animation.enabled) {
-    var plan = computePlan(prev, data);
+    const plan = computePlan(prev, data);
     if (Object.keys(plan.anims).length > 0 || plan.fadings.length > 0) {
-      var alreadyRunning = data.animation.current.start;
+      const alreadyRunning = data.animation.current.start;
       data.animation.current = {
         start: new Date().getTime(),
         duration: data.animation.duration,
@@ -153,16 +152,14 @@ function animate(transformation, data) {
 // transformation is a function
 // accepts board data and any number of arguments,
 // and mutates the board.
-module.exports = function(transformation, data, skip) {
-  return function() {
-    var transformationArgs = [data].concat(Array.prototype.slice.call(arguments, 0));
-    if (!data.render) return transformation.apply(null, transformationArgs);
-    else if (data.animation.enabled && !skip)
-      return animate(util.partialApply(transformation, transformationArgs), data);
-    else {
-      var result = transformation.apply(null, transformationArgs);
-      data.renderRAF();
-      return result;
-    }
-  };
+export default (transformation, data, skip) => function() {
+  const transformationArgs = [data].concat(Array.prototype.slice.call(arguments, 0));
+  if (!data.render) return transformation(...transformationArgs);
+  else if (data.animation.enabled && !skip)
+    return animate(util.partialApply(transformation, transformationArgs), data);
+  else {
+    const result = transformation(...transformationArgs);
+    data.renderRAF();
+    return result;
+  }
 };

@@ -1,22 +1,23 @@
-var startAt;
 
-var start = function() {
+let startAt;
+
+const start = () => {
   startAt = new Date();
 };
 
-var cancel = function() {
+const cancel = () => {
   startAt = null;
 };
 
-var stop = function() {
+const stop = () => {
   if (!startAt) return 0;
-  var time = new Date() - startAt;
+  const time = new Date() - startAt;
   startAt = null;
   return time;
 };
 
-module.exports = {
-  start: start,
-  cancel: cancel,
-  stop: stop
+export default {
+  start,
+  cancel,
+  stop
 };

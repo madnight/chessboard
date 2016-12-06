@@ -1,8 +1,8 @@
-var util = require('./util');
+import util from './util';
 
-var initial = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+const initial = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
-var roles = {
+const roles = {
   p: "pawn",
   r: "rook",
   n: "knight",
@@ -11,7 +11,7 @@ var roles = {
   k: "king"
 };
 
-var letters = {
+const letters = {
   pawn: "p",
   rook: "r",
   knight: "n",
@@ -22,11 +22,11 @@ var letters = {
 
 function read(fen) {
   if (fen === 'start') fen = initial;
-  var pieces = {};
-  fen.replace(/ .+$/, '').replace(/~/g, '').split('/').forEach(function(row, y) {
-    var x = 0;
-    row.split('').forEach(function(v) {
-      var nb = parseInt(v);
+  const pieces = {};
+  fen.replace(/ .+$/, '').replace(/~/g, '').split('/').forEach((row, y) => {
+    let x = 0;
+    row.split('').forEach(v => {
+      const nb = parseInt(v);
       if (nb) x += nb;
       else {
         x++;
@@ -43,22 +43,18 @@ function read(fen) {
 
 function write(pieces) {
   return [8, 7, 6, 5, 4, 3, 2].reduce(
-    function(str, nb) {
-      return str.replace(new RegExp(Array(nb + 1).join('1'), 'g'), nb);
-    },
-    util.invRanks.map(function(y) {
-      return util.ranks.map(function(x) {
-        var piece = pieces[util.pos2key([x, y])];
-        if (piece) {
-          var letter = letters[piece.role];
-          return piece.color === 'white' ? letter.toUpperCase() : letter;
-        } else return '1';
-      }).join('');
-    }).join('/'));
+    (str, nb) => str.replace(new RegExp(Array(nb + 1).join('1'), 'g'), nb),
+    util.invRanks.map(y => util.ranks.map(x => {
+      const piece = pieces[util.pos2key([x, y])];
+      if (piece) {
+        const letter = letters[piece.role];
+        return piece.color === 'white' ? letter.toUpperCase() : letter;
+      } else return '1';
+    }).join('')).join('/'));
 }
 
-module.exports = {
-  initial: initial,
-  read: read,
-  write: write
+export default {
+  initial,
+  read,
+  write
 };

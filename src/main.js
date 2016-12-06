@@ -1,24 +1,24 @@
-var m = require('mithril');
-var ctrl = require('./ctrl');
-var view = require('./view');
-var api = require('./api');
+import m from 'mithril';
+import ctrl from './ctrl';
+import view from './view';
+import api from './api';
 
 // for usage outside of mithril
 function init(element, config) {
 
-  var controller = new ctrl(config);
+  const controller = new ctrl(config);
 
   m.render(element, view(controller));
 
   return api(controller);
 }
 
-module.exports = init;
-module.exports.controller = ctrl;
-module.exports.view = view;
-module.exports.fen = require('./fen');
-module.exports.util = require('./util');
-module.exports.configure = require('./configure');
-module.exports.anim = require('./anim');
-module.exports.board = require('./board');
-module.exports.drag = require('./drag');
+export default init;
+export {ctrl as controller};
+export {view};
+export var fen = require('./fen');
+export var util = require('./util');
+export var configure = require('./configure');
+export var anim = require('./anim');
+export var board = require('./board');
+export var drag = require('./drag');

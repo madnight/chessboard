@@ -1,4 +1,4 @@
-var util = require('./util');
+import util from './util';
 
 function diff(a, b) {
   return Math.abs(a - b);
@@ -16,8 +16,8 @@ function pawn(color, x1, y1, x2, y2) {
 }
 
 function knight(x1, y1, x2, y2) {
-  var xd = diff(x1, x2);
-  var yd = diff(y1, y2);
+  const xd = diff(x1, x2);
+  const yd = diff(y1, y2);
   return (xd === 1 && yd === 2) || (xd === 2 && yd === 1);
 }
 
@@ -44,18 +44,16 @@ function king(color, rookFiles, canCastle, x1, y1, x2, y2) {
 }
 
 function rookFilesOf(pieces, color) {
-  return Object.keys(pieces).filter(function(key) {
-    var piece = pieces[key];
+  return Object.keys(pieces).filter(key => {
+    const piece = pieces[key];
     return piece && piece.color === color && piece.role === 'rook';
-  }).map(function(key) {
-    return util.key2pos(key)[0];
-  });
+  }).map(key => util.key2pos(key)[0]);
 }
 
 function compute(pieces, key, canCastle) {
-  var piece = pieces[key];
-  var pos = util.key2pos(key);
-  var mobility;
+  const piece = pieces[key];
+  const pos = util.key2pos(key);
+  let mobility;
   switch (piece.role) {
     case 'pawn':
       mobility = pawn.bind(null, piece.color);
@@ -76,9 +74,7 @@ function compute(pieces, key, canCastle) {
       mobility = king.bind(null, piece.color, rookFilesOf(pieces, piece.color), canCastle);
       break;
   }
-  return util.allPos.filter(function(pos2) {
-    return (pos[0] !== pos2[0] || pos[1] !== pos2[1]) && mobility(pos[0], pos[1], pos2[0], pos2[1]);
-  }).map(util.pos2key);
+  return util.allPos.filter(pos2 => (pos[0] !== pos2[0] || pos[1] !== pos2[1]) && mobility(pos[0], pos[1], pos2[0], pos2[1])).map(util.pos2key);
 }
 
-module.exports = compute;
+export default compute;

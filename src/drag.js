@@ -1,15 +1,15 @@
-var board = require('./board');
-var util = require('./util');
-var draw = require('./draw');
+import board from './board';
+import util from './util';
+import draw from './draw';
 
-var originTarget;
+let originTarget;
 
 function hashPiece(piece) {
   return piece ? piece.color + piece.role : '';
 }
 
 function computeSquareBounds(data, bounds, key) {
-  var pos = util.key2pos(key);
+  const pos = util.key2pos(key);
   if (data.orientation !== 'white') {
     pos[0] = 9 - pos[0];
     pos[1] = 9 - pos[1];
@@ -28,25 +28,25 @@ function start(data, e) {
   e.stopPropagation();
   e.preventDefault();
   originTarget = e.target;
-  var previouslySelected = data.selected;
-  var position = util.eventPosition(e);
-  var bounds = data.bounds();
-  var orig = board.getKeyAtDomPos(data, position, bounds);
-  var piece = data.pieces[orig];
+  const previouslySelected = data.selected;
+  const position = util.eventPosition(e);
+  const bounds = data.bounds();
+  const orig = board.getKeyAtDomPos(data, position, bounds);
+  const piece = data.pieces[orig];
   if (!previouslySelected && (
     data.drawable.eraseOnClick ||
     (!piece || piece.color !== data.turnColor)
   )) draw.clear(data);
   if (data.viewOnly) return;
-  var hadPremove = !!data.premovable.current;
-  var hadPredrop = !!data.predroppable.current.key;
+  const hadPremove = !!data.premovable.current;
+  const hadPredrop = !!data.predroppable.current.key;
   board.selectSquare(data, orig);
-  var stillSelected = data.selected === orig;
+  const stillSelected = data.selected === orig;
   if (piece && stillSelected && board.isDraggable(data, orig)) {
-    var squareBounds = computeSquareBounds(data, bounds, orig);
+    const squareBounds = computeSquareBounds(data, bounds, orig);
     data.draggable.current = {
-      previouslySelected: previouslySelected,
-      orig: orig,
+      previouslySelected,
+      orig,
       piece: hashPiece(piece),
       rel: position,
       epos: position,
@@ -55,7 +55,7 @@ function start(data, e) {
         position[0] - (squareBounds.left + squareBounds.width / 2),
         position[1] - (squareBounds.top + squareBounds.height / 2)
       ] : [0, 0],
-      bounds: bounds,
+      bounds,
       started: data.draggable.autoDistance && data.stats.dragged
     };
   } else {
@@ -66,8 +66,8 @@ function start(data, e) {
 }
 
 function processDrag(data) {
-  util.requestAnimationFrame(function() {
-    var cur = data.draggable.current;
+  util.requestAnimationFrame(() => {
+    const cur = data.draggable.current;
     if (cur.orig) {
       // cancel animations while dragging
       if (data.animation.current.start && data.animation.current.anims[cur.orig])
@@ -98,8 +98,8 @@ function move(data, e) {
 }
 
 function end(data, e) {
-  var cur = data.draggable.current;
-  var orig = cur ? cur.orig : null;
+  const cur = data.draggable.current;
+  const orig = cur ? cur.orig : null;
   if (!orig) return;
   // comparing with the origin target is an easy way to test that the end event
   // has the same touch origin
@@ -109,8 +109,8 @@ function end(data, e) {
   }
   board.unsetPremove(data);
   board.unsetPredrop(data);
-  var eventPos = util.eventPosition(e)
-  var dest = eventPos ? board.getKeyAtDomPos(data, eventPos, cur.bounds) : cur.over;
+  const eventPos = util.eventPosition(e);
+  const dest = eventPos ? board.getKeyAtDomPos(data, eventPos, cur.bounds) : cur.over;
   if (cur.started) {
     if (cur.newPiece) board.dropNewPiece(data, orig, dest);
     else {
@@ -131,10 +131,10 @@ function cancel(data) {
   }
 }
 
-module.exports = {
-  start: start,
-  move: move,
-  end: end,
-  cancel: cancel,
-  processDrag: processDrag // must be exposed for board editors
+export default {
+  start,
+  move,
+  end,
+  cancel,
+  processDrag // must be exposed for board editors
 };

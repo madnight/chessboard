@@ -1,3 +1,38 @@
+body {
+  text-align: center;
+  font-size: 11px;
+  margin: 30px 0 0 0;
+}
+
+section {
+  display: inline-block;
+  padding: 20px;
+}
+section p {
+  margin: 5px 0px 0 0;
+}
+
+.chessground.normal {
+  width: 512px;
+  height: 512px;
+}
+.cg-board-wrap svg {
+  opacity: 0.6;
+  overflow: hidden;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+.cg-board svg * {
+  transition: 0.35s;
+}
+.cg-board svg image {
+  opacity: 0.5;
+}
 .cg-board-wrap {
   width: 100%;
   height: 100%;
@@ -90,9 +125,6 @@ piece.ghost {
   height: 100%;
   width: 12px;
 }
-.is3d .cg-board-wrap coords.ranks {
-  height: calc(100% - 10px);
-}
 .cg-board-wrap coords.ranks.black {
   flex-flow: column;
 }
@@ -134,4 +166,43 @@ body.coords_1 .cg-board-wrap coords.ranks {
 }
 body.coords_1 .cg-board-wrap coords.ranks coord {
   transform: none;
+}
+.brown .cg-board {
+  background-image: url('images/brown.png');
+}
+.merida piece.pawn.white {
+  background-image: url('images/wP.svg');
+}
+.merida piece.bishop.white {
+  background-image: url('images/wB.svg');
+}
+.merida piece.knight.white {
+  background-image: url('images/wN.svg');
+}
+.merida piece.rook.white {
+  background-image: url('images/wR.svg');
+}
+.merida piece.queen.white {
+  background-image: url('images/wQ.svg');
+}
+.merida piece.king.white {
+  background-image: url('images/wK.svg');
+}
+.merida piece.pawn.black {
+  background-image: url('images/bP.svg');
+}
+.merida piece.bishop.black {
+  background-image: url('images/bB.svg');
+}
+.merida piece.knight.black {
+  background-image: url('images/bN.svg');
+}
+.merida piece.rook.black {
+  background-image: url('images/bR.svg');
+}
+.merida piece.queen.black {
+  background-image: url('images/bQ.svg');
+}
+.merida piece.king.black {
+  background-image: url('images/bK.svg');
 }

@@ -1,10 +1,10 @@
-var board = require('./board');
-var util = require('./util');
+import board from './board';
+import util from './util';
 
-var brushes = ['green', 'red', 'blue', 'yellow'];
+const brushes = ['green', 'red', 'blue', 'yellow'];
 
 function hashPiece(piece) {
-  return piece ? piece.color + ' ' + piece.role : '';
+  return piece ? `${piece.color} ${piece.role}` : '';
 }
 
 function start(data, e) {
@@ -12,23 +12,23 @@ function start(data, e) {
   e.stopPropagation();
   e.preventDefault();
   board.cancelMove(data);
-  var position = util.eventPosition(e);
-  var bounds = data.bounds();
-  var orig = board.getKeyAtDomPos(data, position, bounds);
+  const position = util.eventPosition(e);
+  const bounds = data.bounds();
+  const orig = board.getKeyAtDomPos(data, position, bounds);
   data.drawable.current = {
-    orig: orig,
+    orig,
     epos: position,
-    bounds: bounds,
+    bounds,
     brush: brushes[(e.shiftKey & util.isRightButton(e)) + (e.altKey ? 2 : 0)]
   };
   processDraw(data);
 }
 
 function processDraw(data) {
-  util.requestAnimationFrame(function() {
-    var cur = data.drawable.current;
+  util.requestAnimationFrame(() => {
+    const cur = data.drawable.current;
     if (cur.orig) {
-      var dest = board.getKeyAtDomPos(data, cur.epos, cur.bounds);
+      const dest = board.getKeyAtDomPos(data, cur.epos, cur.bounds);
       if (cur.orig === dest) cur.dest = undefined;
       else cur.dest = dest;
     }
@@ -43,9 +43,9 @@ function move(data, e) {
 }
 
 function end(data, e) {
-  var drawable = data.drawable;
-  var orig = drawable.current.orig;
-  var dest = drawable.current.dest;
+  const drawable = data.drawable;
+  const orig = drawable.current.orig;
+  const dest = drawable.current.dest;
   if (orig && dest) addLine(drawable, orig, dest);
   else if (orig) addCircle(drawable, orig);
   drawable.current = {};
@@ -65,39 +65,33 @@ function clear(data) {
 }
 
 function not(f) {
-  return function(x) {
-    return !f(x);
-  };
+  return x => !f(x);
 }
 
 function addCircle(drawable, key) {
-  var brush = drawable.current.brush;
-  var sameCircle = function(s) {
-    return s.orig === key && !s.dest;
-  };
-  var similar = drawable.shapes.filter(sameCircle)[0];
+  const brush = drawable.current.brush;
+  const sameCircle = s => s.orig === key && !s.dest;
+  const similar = drawable.shapes.filter(sameCircle)[0];
   if (similar) drawable.shapes = drawable.shapes.filter(not(sameCircle));
   if (!similar || similar.brush !== brush) drawable.shapes.push({
-    brush: brush,
+    brush,
     orig: key
   });
   onChange(drawable);
 }
 
 function addLine(drawable, orig, dest) {
-  var brush = drawable.current.brush;
-  var sameLine = function(s) {
-    return s.orig && s.dest && (
-      (s.orig === orig && s.dest === dest) ||
-      (s.dest === orig && s.orig === dest)
-    );
-  };
-  var exists = drawable.shapes.filter(sameLine).length > 0;
+  const brush = drawable.current.brush;
+  const sameLine = s => s.orig && s.dest && (
+    (s.orig === orig && s.dest === dest) ||
+    (s.dest === orig && s.orig === dest)
+  );
+  const exists = drawable.shapes.filter(sameLine).length > 0;
   if (exists) drawable.shapes = drawable.shapes.filter(not(sameLine));
   else drawable.shapes.push({
-    brush: brush,
-    orig: orig,
-    dest: dest
+    brush,
+    orig,
+    dest
   });
   onChange(drawable);
 }
@@ -106,11 +100,11 @@ function onChange(drawable) {
   drawable.onChange(drawable.shapes);
 }
 
-module.exports = {
-  start: start,
-  move: move,
-  end: end,
-  cancel: cancel,
-  clear: clear,
-  processDraw: processDraw
+export default {
+  start,
+  move,
+  end,
+  cancel,
+  clear,
+  processDraw
 };

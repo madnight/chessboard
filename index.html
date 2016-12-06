@@ -1,21 +1,18 @@
 <html>
 
   <head>
-    <link rel="stylesheet" href="example.css">
-    <link rel="stylesheet" href="../assets/base.css">
-    <link rel="stylesheet" href="../assets/theme.css">
+    <link rel="stylesheet" href="assets/style.css">
   </head>
 
   <body>
-
-    <script src="../chessground.js"></script>
-    <script src="chess.min.js"></script>
+    <script src="chessground.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"></script>
     <script>
       function chessToDests(chess) {
-        var dests = {};
-        chess.SQUARES.forEach(function(s) {
-          var ms = chess.moves({square: s, verbose: true});
-          if (ms.length) dests[s] = ms.map(function(m) { return m.to; });
+        const dests = {};
+        chess.SQUARES.forEach(s => {
+          const ms = chess.moves({square: s, verbose: true});
+          if (ms.length) dests[s] = ms.map(m => m.to);
         });
         return dests;
       }
@@ -27,10 +24,10 @@
     <section>
         <div class="chessground normal brown merida" id="ground8"></div>
         <script>
-            (function() {
-          var ground;
-          var chess = new Chess();
-          var onMove = function(orig, dest) {
+           ((() => {
+          let ground;
+          const chess = new Chess();
+          const onMove = (orig, dest) => {
             chess.move({from: orig, to: dest});
             ground.set({
               turnColor: chessToColor(chess),
@@ -59,7 +56,7 @@
             }
           });
               window.cg7 = ground;
-        })();
+        }))();
         </script>
 
     </section>
